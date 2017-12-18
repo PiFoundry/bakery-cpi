@@ -103,27 +103,43 @@ func (c CPI) RebootVM(cid apiv1.VMCID) error {
 }
 
 func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
-	return []apiv1.DiskCID{}, nil
+	diskIds, err := c.bakeryClient.GetDisks()
+	if err != nil {
+		return []apiv1.DiskCID{}, err
+	}
+
+	diskCids := make([]apiv1.DiskCID, len(diskIds))
+	for i, cid := range diskIds {
+		diskCids[i] = apiv1.NewDiskCID(cid)
+	}
+
+	return diskCids, nil
 }
 
 func (c CPI) CreateDisk(size int,
 	cloudProps apiv1.DiskCloudProps, associatedVMCID *apiv1.VMCID) (apiv1.DiskCID, error) {
+	cid, err := c.bakeryClient.CreateDisk()
+	if err != nil {
+		return apiv1.DiskCID{}, err
+	}
 
-	return apiv1.NewDiskCID("disk-cid"), nil
+	return apiv1.NewDiskCID(cid), nil
 }
 
 func (c CPI) DeleteDisk(cid apiv1.DiskCID) error {
-	return nil
+	return c.bakeryClient.DeleteDisk(cid.AsString())
 }
 
 func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
-	return nil
+	//TODO: bosh agent settings.json generation and upload
+	return c.bakeryClient.AttachDisk(vmCID.AsString(), diskCID.AsString())
 }
 
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
-	return nil
+	//TODO: detach in bosh agent as well
+	return c.bakeryClient.DetachDisk(vmCID.AsString(), diskCID.AsString())
 }
 
 func (c CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
-	return false, nil
+	return c.bakeryClient.DiskExists(cid.AsString())
 }
