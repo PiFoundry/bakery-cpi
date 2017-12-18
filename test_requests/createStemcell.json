@@ -1,0 +1,15 @@
+{
+    "method": "create_stemcell",
+    "arguments": [
+        "/home/chris/Downloads/2017-11-29-raspbian-stretch-lite.img",
+        {
+            "name": "2017-11-29-raspbian-stretch-lite",
+            "version": "0000",
+            "infrastructure": "rpi",
+            "disk_format": "img",
+            "os_type": "linux",
+            "os_distro": "raspbian",
+            "architecture": "arm5"
+        }],
+    "context": { "url": "http://localhost:8080/api/v1" }
+}

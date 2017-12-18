@@ -1,0 +1,5 @@
+{
+    "method": "delete_stemcell",
+    "arguments": [ "2017-11-29-raspbian-stretch-lite" ],
+    "context": { "url": "http://localhost:8080/api/v1" }
+}
