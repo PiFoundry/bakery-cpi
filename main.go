@@ -77,7 +77,7 @@ func (c CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
 }
 
 func (c CPI) UploadEnvJson(agentID apiv1.AgentID, cid apiv1.VMCID, networks apiv1.Networks, env apiv1.VMEnv) error {
-	ao, err := LoadConfig("config/cpi.json")
+	ao, err := LoadConfig("/var/vcap/jobs/bakery_cpi/config/cpi.json")
 	if err != nil {
 		return err
 	}
