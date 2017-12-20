@@ -1,0 +1,21 @@
+{
+  "Platform": {
+    "Linux": {
+      "CreatePartitionIfNoEphemeralDisk": true,
+      "DevicePathResolutionType": "virtio"
+    }
+  },
+  "Infrastructure": {
+    "NetworkingType": "dynamic",
+    "Settings": {
+      "Sources": [
+        {
+          "Type": "File",
+          "SettingsPath": "/piConfig/settings.json"
+        }
+      ],
+      "UseServerName": true,
+      "UseRegistry": false
+    }
+  }
+}

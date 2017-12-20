@@ -76,19 +76,21 @@ func (c CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
 	return c.bakeryClient.DeleteImage(cid.AsString())
 }
 
-func (c CPI) CreateVM(
-	agentID apiv1.AgentID, stemcellCID apiv1.StemcellCID,
-	cloudProps apiv1.VMCloudProps, networks apiv1.Networks,
-	associatedDiskCIDs []apiv1.DiskCID, env apiv1.VMEnv) (apiv1.VMCID, error) {
-
-	pi, err := c.bakeryClient.BakePi(stemcellCID.AsString())
+func (c CPI) UploadEnvJson(agentID apiv1.AgentID, cid apiv1.VMCID, networks apiv1.Networks, env apiv1.VMEnv) error {
+	ao, err := LoadConfig("config/cpi.json")
 	if err != nil {
-		return apiv1.VMCID{}, err
+		return err
 	}
 
-	//TODO: Generate agent config, VMenv config and pass customization to bakery (implement customization in bakery as well :D)
+	ae := apiv1.NewAgentEnvFactory().ForVM(agentID, cid, networks, env, ao)
+	//TODO: ae.AttachSystemDisk(interface{})
+	aeJson, err := ae.AsBytes()
+	if err != nil {
+		return err
+	}
 
-	return apiv1.NewVMCID(pi.Id), nil
+	return c.bakeryClient.UploadBytesAsFile(cid.AsString(), "env.json", aeJson)
+
 }
 
 func (c CPI) DeleteVM(cid apiv1.VMCID) error {

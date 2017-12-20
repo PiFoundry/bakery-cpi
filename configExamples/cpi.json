@@ -1,0 +1,12 @@
+{
+  "Blobstore": {
+    "provider": "dav",
+    "Options": {
+      "endpoint": "http://davip:davport",
+			"password": "davpassword",
+			"user": "agent"
+    }
+  },
+  "Mbus": "",
+  "NTP": []
+}
