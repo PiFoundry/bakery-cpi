@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
@@ -57,7 +58,15 @@ func (c CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 
 	cid, err := c.bakeryClient.UploadImage(imagePath, scProps.Name)
 	if err != nil {
-		return apiv1.StemcellCID{}, err
+		if strings.Contains(err.Error(), "403") { //when running bosh upload-stemcell --fix the existing image wmust be overwritten. Bakery returns 403 in that case so we delete it and then re-upload it.
+			c.bakeryClient.DeleteImage(scProps.Name)
+			cid, err = c.bakeryClient.UploadImage(imagePath, scProps.Name)
+			if err != nil {
+				return apiv1.StemcellCID{}, err
+			}
+		} else {
+			return apiv1.StemcellCID{}, err
+		}
 	}
 
 	return apiv1.NewStemcellCID(cid), nil
