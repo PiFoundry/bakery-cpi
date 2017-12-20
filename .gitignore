@@ -14,7 +14,5 @@
 .glide/
 
 #db file
-piInventory.db
-bakery
-ppi
-ppiConfig.json
+bakery_cpi
+cpi
