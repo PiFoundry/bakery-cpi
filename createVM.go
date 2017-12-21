@@ -41,6 +41,7 @@ func (c CPI) CreateVM(
 					return
 				}
 			}
+			time.Sleep(4 * time.Second) // poll once every 4 seconds
 		}
 	}()
 
@@ -62,5 +63,10 @@ func (c CPI) CreateVM(
 		return apiv1.VMCID{}, err
 	}
 
+	err = c.bakeryClient.PowerCyclePi(cid.AsString())
+	if err != nil {
+		c.bakeryClient.UnbakePi(cid.AsString())
+		return apiv1.VMCID{}, fmt.Errorf("Powering on failed. Rolled back deployment.")
+	}
 	return cid, nil
 }
