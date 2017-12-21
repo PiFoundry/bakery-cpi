@@ -110,7 +110,7 @@ func (c CPI) HasVM(cid apiv1.VMCID) (bool, error) {
 }
 
 func (c CPI) RebootVM(cid apiv1.VMCID) error {
-	return c.bakeryClient.RebootPi(cid.AsString())
+	return c.bakeryClient.PowerCyclePi(cid.AsString())
 }
 
 func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
