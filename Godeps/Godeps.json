@@ -1,0 +1,27 @@
+{
+	"ImportPath": "github.com/vchrisr/bosh-bakery-cpi",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/cloudfoundry/bosh-utils/errors",
+			"Rev": "1a26ad52ff67437229527c43d17254e2a9dffcc6"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/bosh-utils/logger",
+			"Rev": "1a26ad52ff67437229527c43d17254e2a9dffcc6"
+		},
+		{
+			"ImportPath": "github.com/cppforlife/bosh-cpi-go/apiv1",
+			"Rev": "24a661ddbeef96894bb6970bba14bcd8c3c68222"
+		},
+		{
+			"ImportPath": "github.com/cppforlife/bosh-cpi-go/rpc",
+			"Rev": "24a661ddbeef96894bb6970bba14bcd8c3c68222"
+		},
+		{
+			"ImportPath": "github.com/vchrisr/bakery-client",
+			"Rev": "17944e86be421be23479dfd62ce9cbf43ade18f2"
+		}
+	]
+}
