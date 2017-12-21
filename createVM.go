@@ -53,6 +53,7 @@ func (c CPI) CreateVM(
 		}
 	case <-time.After(5 * time.Minute):
 		c.bakeryClient.UnbakePi(cid.AsString())
+		quitChannel <- true
 		return apiv1.VMCID{}, fmt.Errorf("Waiting for Pi to be ready timed out. Rolled back deployment.")
 	}
 
