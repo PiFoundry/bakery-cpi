@@ -1,7 +1,7 @@
 {
   "Platform": {
     "Linux": {
-      "CreatePartitionIfNoEphemeralDisk": true,
+      "CreatePartitionIfNoEphemeralDisk": false,
       "DevicePathResolutionType": "virtio"
     }
   },

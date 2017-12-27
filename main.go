@@ -129,7 +129,7 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 
 func (c CPI) CreateDisk(size int,
 	cloudProps apiv1.DiskCloudProps, associatedVMCID *apiv1.VMCID) (apiv1.DiskCID, error) {
-	cid, err := c.bakeryClient.CreateDisk()
+	cid, err := c.bakeryClient.CreateDisk(size)
 	if err != nil {
 		return apiv1.DiskCID{}, err
 	}

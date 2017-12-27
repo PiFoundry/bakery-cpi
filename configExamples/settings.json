@@ -1,0 +1,48 @@
+{
+        "agent_id": "123",
+        "blobstore": {
+                "provider": "dav",
+                "options": {
+                        "endpoint": "http://davip:davport",
+                        "password": "davpassword",
+                        "user": "agent"
+                }
+        },
+        "disks": {
+                "system": "",
+                "ephemeral": "/dev/loop0",
+                "persistent": null,
+                "raw_ephemeral": true
+        },
+        "env": {
+                "bosh": {
+                        "password": "",
+                        "keep_root_password": false,
+                        "remove_dev_tools": false,
+                        "remove_static_libraries": false,
+                        "authorized_keys": null,
+                        "swap_size": 10,
+                        "mbus": {
+                                "cert": {
+                                        "ca": "",
+                                        "private_key": "",
+                                        "certificate": ""
+                                },
+                                "urls": null
+                        },
+                        "ipv6": {
+                                "enable": false
+                        },
+                        "blobstores": null,
+                        "ntp": null
+                },
+                "persistent_disk_fs": "",
+                "persistent_disk_mount_options": null
+        },
+        "networks": null,
+        "ntp": [],
+        "mbus": "",
+        "vm": {
+                "name": "123456"
+        }
+}
