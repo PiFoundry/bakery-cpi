@@ -13,7 +13,7 @@ func (c CPI) CreateVM(
 	associatedDiskCIDs []apiv1.DiskCID, env apiv1.VMEnv) (apiv1.VMCID, error) {
 
 	var vmProps vmCloudProps
-	cloudProps.As(vmProps)
+	cloudProps.As(&vmProps)
 
 	pi, err := c.bakeryClient.BakePi(stemcellCID.AsString())
 	if err != nil {
@@ -59,14 +59,17 @@ func (c CPI) CreateVM(
 		quitChannel <- true
 		return apiv1.VMCID{}, fmt.Errorf("Waiting for Pi to be ready timed out. Rolled back deployment.")
 	}
+	//////////////////
 
 	diskCID, err := c.CreateDisk(vmProps.EphemeralDisk, nil, &cid)
 	if err != nil {
+		c.bakeryClient.UnbakePi(cid.AsString())
 		return apiv1.VMCID{}, err
 	}
 
 	err = c.AttachDisk(cid, diskCID)
 	if err != nil {
+		c.bakeryClient.UnbakePi(cid.AsString())
 		return apiv1.VMCID{}, err
 	}
 
