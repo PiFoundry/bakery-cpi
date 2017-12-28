@@ -47,7 +47,7 @@ func (f CPIFactory) New(context apiv1.CallContext) (apiv1.CPI, error) {
 
 func (c CPI) Info() (apiv1.Info, error) {
 	return apiv1.Info{
-		StemcellFormats: []string{"img"},
+		StemcellFormats: []string{"piimg"},
 	}, nil
 }
 
