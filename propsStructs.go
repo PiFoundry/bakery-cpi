@@ -13,3 +13,7 @@ type stemcellCloudProps struct {
 	OsDistro       string `json:"os_distro"`
 	Architecture   string `json:"architecture"`
 }
+
+type vmCloudProps struct {
+	EphemeralDisk int `json:"ephemeral_disk"`
+}

@@ -1,0 +1,23 @@
+#!/bin/bash
+# put in /etc/init.d/open-iscsi in the stemcell
+
+jsonPath="/piConfig/disks.json"
+
+for id in $(jq '.disks[].id' $jsonPath)
+do
+  location=$(jq ".disks[$id].location" $jsonPath)
+  id=$(jq ".disks[$id].id" $jsonPath)
+  nfsaddress=$(jq ".disks[$id].nfsAddress" $jsonPath)
+  mountpoint="/mnt/${id//\"/}"
+  diskpath=$mountpoint/disk.img
+
+  mkdir $mountpoint
+  mount -t nfs $nfsaddress:${location//\"/} $mountpoint
+
+  kpartx -av -p "-part" $diskpath
+  ln -s /dev/loop0 /dev/mapper/loop0
+  ln -s /dev/mapper/loop0-part1 /dev/mapper/loop01
+  ln -s /dev/mapper/loop0-part2 /dev/mapper/loop02
+done
+
+exit 0

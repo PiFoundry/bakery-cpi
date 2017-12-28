@@ -12,6 +12,9 @@ func (c CPI) CreateVM(
 	cloudProps apiv1.VMCloudProps, networks apiv1.Networks,
 	associatedDiskCIDs []apiv1.DiskCID, env apiv1.VMEnv) (apiv1.VMCID, error) {
 
+	var vmProps vmCloudProps
+	cloudProps.As(vmProps)
+
 	pi, err := c.bakeryClient.BakePi(stemcellCID.AsString())
 	if err != nil {
 		return apiv1.VMCID{}, err
@@ -57,7 +60,17 @@ func (c CPI) CreateVM(
 		return apiv1.VMCID{}, fmt.Errorf("Waiting for Pi to be ready timed out. Rolled back deployment.")
 	}
 
-	err = c.UploadEnvJson(agentID, cid, networks, env)
+	diskCID, err := c.CreateDisk(vmProps.EphemeralDisk, nil, &cid)
+	if err != nil {
+		return apiv1.VMCID{}, err
+	}
+
+	err = c.AttachDisk(cid, diskCID)
+	if err != nil {
+		return apiv1.VMCID{}, err
+	}
+
+	err = c.UploadSettings(agentID, cid, networks, env, nil)
 	if err != nil {
 		//roll back the deploy
 		c.bakeryClient.UnbakePi(cid.AsString())
