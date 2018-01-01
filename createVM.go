@@ -15,10 +15,6 @@ func (c CPI) CreateVM(
 	var vmProps vmCloudProps
 	cloudProps.As(&vmProps)
 
-	for _, network := range networks {
-		network.SetPreconfigured()
-	}
-
 	pi, err := c.bakeryClient.BakePi(stemcellCID.AsString())
 	if err != nil {
 		return apiv1.VMCID{}, err
@@ -75,6 +71,14 @@ func (c CPI) CreateVM(
 	if err != nil {
 		c.bakeryClient.UnbakePi(cid.AsString())
 		return apiv1.VMCID{}, err
+	}
+
+	mac := fmt.Sprintf("b8:27:eb:%v:%v:%v", pi.Id[2:3], pi.Id[4:5], pi.Id[6:7]) //piId == serial number. last 6 digits of serial number==last 6 digits of mac. first 6 are rPi foundation mac range
+	for _, network := range networks {
+		if !network.IsDynamic() {
+			network.SetMAC(mac)
+		}
+		break //only 1 network supported
 	}
 
 	err = c.UploadSettings(agentID, cid, networks, env, nil)
