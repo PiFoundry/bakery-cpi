@@ -75,9 +75,7 @@ func (c CPI) CreateVM(
 
 	mac := fmt.Sprintf("b8:27:eb:%v:%v:%v", pi.Id[2:4], pi.Id[4:6], pi.Id[6:]) //piId == serial number. last 6 digits of serial number==last 6 digits of mac. first 6 are rPi foundation mac range
 	for _, network := range networks {
-		if !network.IsDynamic() {
-			network.SetMAC(mac)
-		}
+		network.SetMAC(mac)
 		break //only 1 network supported
 	}
 
