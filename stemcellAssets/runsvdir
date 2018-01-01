@@ -1,0 +1,15 @@
+#!/bin/bash
+# put in /etc/init.d/open-iscsi in the stemcell
+### BEGIN INIT INFO
+# Provides:          runsvdir
+# Required-Start:    open-iscsi
+# Required-Stop:     $remote_fs
+# Should-Start:      $all
+# Should-Stop:       $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: runit - a UNIX init scheme with service supervision
+# Description:       runit - needed by bosh
+### END INIT INFO
+
+exec /usr/bin/runsvdir-start

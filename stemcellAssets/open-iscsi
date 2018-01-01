@@ -1,5 +1,17 @@
 #!/bin/bash
 # put in /etc/init.d/open-iscsi in the stemcell
+### BEGIN INIT INFO
+# Provides:          open-iscsi
+# Required-Start:    $remote_fs nfs-common
+# Required-Stop:     $remote_fs nfs-common
+# Should-Start:      $all
+# Should-Stop:       $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: open-iscsi fake for bosh agent
+# Description:       Fakes open-iscsi for the bosh agent
+#                    mounts nfs and creates loopback devices pointing to disk.img on nfs eport
+### END INIT INFO
 
 jsonPath="/piConfig/disks.json"
 
@@ -12,12 +24,14 @@ do
   diskpath=$mountpoint/disk.img
 
   mkdir $mountpoint
-  mount -t nfs $nfsaddress:${location//\"/} $mountpoint
+  mount -t nfs ${nfsaddress//\"/}:${location//\"/} $mountpoint
 
   kpartx -av -p "-part" $diskpath
   ln -s /dev/loop0 /dev/mapper/loop0
   ln -s /dev/mapper/loop0-part1 /dev/mapper/loop01
   ln -s /dev/mapper/loop0-part2 /dev/mapper/loop02
 done
+
+sleep 5s
 
 exit 0
