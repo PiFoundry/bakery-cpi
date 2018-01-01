@@ -15,6 +15,10 @@ func (c CPI) CreateVM(
 	var vmProps vmCloudProps
 	cloudProps.As(&vmProps)
 
+	for _, network := range networks {
+		network.SetPreconfigured()
+	}
+
 	pi, err := c.bakeryClient.BakePi(stemcellCID.AsString())
 	if err != nil {
 		return apiv1.VMCID{}, err
@@ -82,8 +86,8 @@ func (c CPI) CreateVM(
 
 	err = c.bakeryClient.PowerCyclePi(cid.AsString())
 	if err != nil {
-		c.bakeryClient.UnbakePi(cid.AsString())
-		return apiv1.VMCID{}, fmt.Errorf("Powering on failed. Rolled back deployment.")
+		err = c.bakeryClient.UnbakePi(cid.AsString())
+		return apiv1.VMCID{}, fmt.Errorf("Powering on failed. Rolled back deployment. Rollback result: %v", err.Error())
 	}
 	return cid, nil
 }
