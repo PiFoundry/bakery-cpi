@@ -33,8 +33,12 @@ func (c CPI) GenerateNewSettings(pi bakeryclient.PiInfo, agentID apiv1.AgentID, 
 	return disksBytes, aeJson, nil
 }
 
-func (c CPI) RegenerateSettings(pi bakeryclient.PiInfo) ([]byte, []byte, error) {
-	vmCID := apiv1.NewVMCID(pi.Id)
+func (c CPI) RegenerateSettings(vmCID apiv1.VMCID, detachDiskId *apiv1.DiskCID) ([]byte, []byte, error) {
+	pi, err := c.bakeryClient.GetPi(vmCID.AsString())
+	if err != nil {
+		return nil, nil, fmt.Errorf("Could not find pi with id: %v. %v", vmCID.AsString(), err)
+	}
+
 	settingsBytes, err := c.bakeryClient.DownloadFileAsBytes(vmCID.AsString(), "settings.json")
 	if err != nil {
 		return nil, nil, fmt.Errorf("Could not get settings.json from Pi: %v\n", err)
@@ -50,6 +54,7 @@ func (c CPI) RegenerateSettings(pi bakeryclient.PiInfo) ([]byte, []byte, error) 
 		return nil, nil, fmt.Errorf("Could not parse settings: %v\n", err)
 	}
 
+	//attach persistent disks to agent settings
 	for i, disk := range pi.Disks {
 		if i <= 1 { //skip first 2 disks
 			loopDevice := fmt.Sprintf("/dev/mapper/loop%v", i-1) //index 1 = loop0
@@ -57,8 +62,12 @@ func (c CPI) RegenerateSettings(pi bakeryclient.PiInfo) ([]byte, []byte, error) 
 		}
 	}
 
+	if detachDiskId != nil {
+		ae.DetachPersistentDisk(*detachDiskId)
+	}
+
 	settingsBytes, _ = ae.AsBytes()
-	disksBytes, _ = json.Marshal(pi.Disks[1:])
+	disksBytes, _ = json.Marshal(pi.Disks[1:]) //skip first disk, its not a disk actually
 
 	return disksBytes, settingsBytes, nil
 }

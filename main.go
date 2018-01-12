@@ -133,12 +133,7 @@ func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 		return fmt.Errorf("Could not attach disk to Pi: %v", err)
 	}
 
-	pi, err := c.bakeryClient.GetPi(vmCID.AsString())
-	if err != nil {
-		return fmt.Errorf("Could not find pi with id: %v. %v", pi.Id, err)
-	}
-
-	ds, as, err := c.RegenerateSettings(pi)
+	ds, as, err := c.RegenerateSettings(vmCID, nil)
 	if err != nil {
 		return fmt.Errorf("Unable to regenerate settings: %v", err)
 	}
@@ -147,8 +142,17 @@ func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 }
 
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
-	//TODO: detach in bosh agent as well
-	return c.bakeryClient.DetachDisk(vmCID.AsString(), diskCID.AsString())
+	err := c.bakeryClient.DetachDisk(vmCID.AsString(), diskCID.AsString())
+	if err != nil {
+		return fmt.Errorf("Could deattach disk from Pi: %v", err)
+	}
+
+	ds, as, err := c.RegenerateSettings(vmCID, &diskCID)
+	if err != nil {
+		return fmt.Errorf("Unable to regenerate settings: %v", err)
+	}
+
+	return c.UploadSettings(vmCID, ds, as)
 }
 
 func (c CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
