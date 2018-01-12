@@ -67,7 +67,7 @@ func (c CPI) CreateVM(
 		return apiv1.VMCID{}, err
 	}
 
-	err = c.AttachDisk(cid, diskCID)
+	err = c.bakeryClient.AttachDisk(cid.AsString(), diskCID.AsString())
 	if err != nil {
 		c.bakeryClient.UnbakePi(cid.AsString())
 		return apiv1.VMCID{}, err
