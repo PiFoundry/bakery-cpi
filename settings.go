@@ -58,7 +58,7 @@ func (c CPI) RegenerateSettings(pi bakeryclient.PiInfo) ([]byte, []byte, error) 
 	}
 
 	settingsBytes, _ = ae.AsBytes()
-	disksBytes, _ = json.Marshal(pi.Disks[2:])
+	disksBytes, _ = json.Marshal(pi.Disks[1:])
 
 	return disksBytes, settingsBytes, nil
 }
