@@ -82,6 +82,7 @@ func (c CPI) CreateVM(
 		break //only 1 network supported
 	}
 
+	pi, _ = c.bakeryClient.GetPi(pi.Id) //update the pi object with latest info (disks etc)
 	diskSettings, agentSettings, err := c.GenerateNewSettings(pi, agentID, cid, networks, env)
 	err = c.UploadSettings(cid, diskSettings, agentSettings)
 	if err != nil {
