@@ -56,7 +56,7 @@ func (c CPI) RegenerateSettings(vmCID apiv1.VMCID, detachDiskId *apiv1.DiskCID) 
 
 	//attach persistent disks to agent settings
 	for i, disk := range pi.Disks {
-		if i <= 1 { //skip first 2 disks
+		if i > 1 { //skip first 2 disks
 			loopDevice := fmt.Sprintf("/dev/mapper/loop%v", i-1) //index 1 = loop0
 			ae.AttachPersistentDisk(apiv1.NewDiskCID(disk.ID), loopDevice)
 		}
