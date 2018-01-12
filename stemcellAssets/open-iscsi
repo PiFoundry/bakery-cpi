@@ -28,13 +28,14 @@ do
   mount -t nfs ${nfsaddress//\"/}:${location//\"/} $mountpoint
 
   kpartx -av -p "-part" $diskpath
+
+  sleep 5s
+
   ln -s /dev/loop${I} /dev/mapper/loop${I}
   ln -s /dev/mapper/loop${I}-part1 /dev/mapper/loop${I}1
   ln -s /dev/mapper/loop${I}-part2 /dev/mapper/loop${I}2
 
    ((++I))
 done
-
-sleep 5s
 
 exit 0
