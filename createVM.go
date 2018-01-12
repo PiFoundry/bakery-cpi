@@ -82,7 +82,8 @@ func (c CPI) CreateVM(
 		break //only 1 network supported
 	}
 
-	err = c.UploadSettings(agentID, cid, networks, env, nil)
+	diskSettings, agentSettings, err := c.GenerateNewSettings(pi, agentID, cid, networks, env)
+	err = c.UploadSettings(cid, diskSettings, agentSettings)
 	if err != nil {
 		//roll back the deploy
 		c.bakeryClient.UnbakePi(cid.AsString())
@@ -91,7 +92,7 @@ func (c CPI) CreateVM(
 
 	err = c.bakeryClient.PowerCyclePi(cid.AsString())
 	if err != nil {
-		err = c.bakeryClient.UnbakePi(cid.AsString())
+		c.bakeryClient.UnbakePi(cid.AsString())
 		return apiv1.VMCID{}, fmt.Errorf("Powering on failed. Rolled back deployment. Rollback result: %v", err.Error())
 	}
 	return cid, nil

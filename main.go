@@ -1,9 +1,8 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 	"os"
-	"path"
 	"strings"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -78,43 +77,6 @@ func (c CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
 	return c.bakeryClient.DeleteImage(cid.AsString())
 }
 
-func (c CPI) UploadSettings(agentID apiv1.AgentID, cid apiv1.VMCID, networks apiv1.Networks, env apiv1.VMEnv, persDisks []apiv1.DiskCID) error {
-	ao, err := LoadConfig("/var/vcap/jobs/bakery_cpi/config/cpi.json")
-	if err != nil {
-		return err
-	}
-
-	ae := apiv1.NewAgentEnvFactory().ForVM(agentID, cid, networks, env, ao)
-	ae.AttachEphemeralDisk("/dev/mapper/loop0")
-
-	for i, did := range persDisks {
-		loopDevice := path.Join("/dev/mapper", string(i+1))
-		ae.AttachPersistentDisk(did, loopDevice)
-	}
-
-	aeJson, err := ae.AsBytes()
-	if err != nil {
-		return err
-	}
-
-	//TODO: generate and upload disks.json
-	disks, _ := c.bakeryClient.GetDisks()
-	for id, disk := range disks.Disks {
-		if disk.Size <= 0 {
-			delete(disks.Disks, id)
-		}
-	}
-
-	disksBytes, _ := json.Marshal(disks)
-
-	err = c.bakeryClient.UploadBytesAsFile(cid.AsString(), "settings.json", aeJson)
-	if err == nil {
-		return c.bakeryClient.UploadBytesAsFile(cid.AsString(), "disks.json", disksBytes)
-	}
-
-	return err
-}
-
 func (c CPI) DeleteVM(cid apiv1.VMCID) error {
 	return c.bakeryClient.UnbakePi(cid.AsString())
 }
@@ -166,8 +128,22 @@ func (c CPI) DeleteDisk(cid apiv1.DiskCID) error {
 }
 
 func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
-	//TODO: bosh agent settings.json and disks.json generation and upload
-	return c.bakeryClient.AttachDisk(vmCID.AsString(), diskCID.AsString())
+	err := c.bakeryClient.AttachDisk(vmCID.AsString(), diskCID.AsString())
+	if err != nil {
+		return fmt.Errorf("Could not attach disk to Pi: %v", err)
+	}
+
+	pi, err := c.bakeryClient.GetPi(vmCID.AsString())
+	if err != nil {
+		return fmt.Errorf("Could not find pi with id: %v. %v", pi.Id, err)
+	}
+
+	ds, as, err := c.RegenerateSettings(pi)
+	if err != nil {
+		return fmt.Errorf("Unable to regenerate settings: %v", err)
+	}
+
+	return c.UploadSettings(vmCID, ds, as)
 }
 
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {

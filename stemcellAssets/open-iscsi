@@ -26,10 +26,13 @@ do
   mkdir $mountpoint
   mount -t nfs ${nfsaddress//\"/}:${location//\"/} $mountpoint
 
+  I=0
   kpartx -av -p "-part" $diskpath
-  ln -s /dev/loop0 /dev/mapper/loop0
-  ln -s /dev/mapper/loop0-part1 /dev/mapper/loop01
-  ln -s /dev/mapper/loop0-part2 /dev/mapper/loop02
+  ln -s /dev/loop0 /dev/mapper/loop${I}
+  ln -s /dev/mapper/loop0-part1 /dev/mapper/loop${I}1
+  ln -s /dev/mapper/loop0-part2 /dev/mapper/loop${I}2
+
+  ((++I))  
 done
 
 sleep 5s
