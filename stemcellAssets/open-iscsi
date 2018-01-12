@@ -14,25 +14,25 @@
 ### END INIT INFO
 
 jsonPath="/piConfig/disks.json"
+I=0
 
-for id in $(jq '.disks[].id' $jsonPath)
+for diskJson in $(jq -c '.[]' $jsonPath)
 do
-  location=$(jq ".disks[$id].location" $jsonPath)
-  id=$(jq ".disks[$id].id" $jsonPath)
-  nfsaddress=$(jq ".disks[$id].nfsAddress" $jsonPath)
+  location=$(echo $diskJson | jq ".location")
+  id=$(echo $diskJson | jq ".id")
+  nfsaddress=$(echo $diskJson | jq ".nfsAddress")
   mountpoint="/mnt/${id//\"/}"
   diskpath=$mountpoint/disk.img
 
   mkdir $mountpoint
   mount -t nfs ${nfsaddress//\"/}:${location//\"/} $mountpoint
 
-  I=0
   kpartx -av -p "-part" $diskpath
-  ln -s /dev/loop0 /dev/mapper/loop${I}
-  ln -s /dev/mapper/loop0-part1 /dev/mapper/loop${I}1
-  ln -s /dev/mapper/loop0-part2 /dev/mapper/loop${I}2
+  ln -s /dev/loop${I} /dev/mapper/loop${I}
+  ln -s /dev/mapper/loop${I}-part1 /dev/mapper/loop${I}1
+  ln -s /dev/mapper/loop${I}-part2 /dev/mapper/loop${I}2
 
-  ((++I))  
+   ((++I))
 done
 
 sleep 5s
