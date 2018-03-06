@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	bakeryclient "github.com/PiFoundry/bakery-client"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
-	bakeryclient "github.com/vchrisr/bakery-client"
 )
 
 func (c CPI) UploadSettings(cid apiv1.VMCID, diskSettings, agentSettings []byte) error {

@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
+	bakeryclient "github.com/PiFoundry/bakery-client"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/cppforlife/bosh-cpi-go/rpc"
-	bakeryclient "github.com/vchrisr/bakery-client"
 )
 
 type CPIFactory struct{}
